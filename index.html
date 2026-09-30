@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malla Curricular Interactiva - Contador Público</title>
+  <style>
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+      --border-color: #cbd5e1;
+      --primary-color: #2563eb;
+      --approved-color: #16a34a;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem 0;
+      color: #1e293b;
+      font-size: 2.2rem;
+    }
+
+    p.subtitle {
+      color: #64748b;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .progress-box {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-bar-bg {
+      background: #e2e8f0;
+      height: 18px;
+      border-radius: 9px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-bar-fill {
+      background: var(--approved-color);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .stat-badge {
+      background: #f8fafc;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .malla-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .year-column {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    .year-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+      text-align: center;
+      color: #1e293b;
+    }
+
+    .intermediate-title {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .subjects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .subject-card {
+      padding: 0.85rem;
+      border-radius: 8px;
+      border: 2px solid var(--border-color);
+      background: var(--card-bg);
+      user-select: none;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .subject-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .subject-code {
+      font-size: 0.8rem;
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #475569;
+      font-weight: bold;
+    }
+
+    .subject-name {
+      font-size: 0.95rem;
+      line-height: 1.3;
+      color: #1e293b;
+      cursor: pointer;
+    }
+
+    .subject-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.2rem;
+      min-height: 24px;
+    }
+
+    .grade-input-container {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .grade-input-container label {
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .grade-input {
+      width: 45px;
+      padding: 2px 4px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .subject-card.approved {
+      background-color: #f0fdf4;
+      border-color: var(--approved-color);
+    }
+
+    .subject-card.approved .subject-name {
+      color: #15803d;
+      font-weight: 600;
+    }
+
+    .subject-card.approved .subject-code {
+      background-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .toggle-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .summary-footer {
+      margin-top: 2.5rem;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .promedio-display {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .promedio-val {
+      color: var(--primary-color);
+      font-size: 1.6rem;
+    }
+
+    .btn-reset {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+
+    .btn-reset:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Contador Público</h1>
+      <p class="subtitle">Malla Curricular Interactiva</p>
+    </header>
+
+    <div class="progress-box">
+      <strong>Avance de la carrera: <span id="progress-text">0%</span></strong>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="stats">
+        <span class="stat-badge">Aprobadas: <span id="approved-count">0</span> / <span id="total-count">0</span></span>
+        <span class="stat-badge">Promedio General: <strong id="top-promedio">-</strong></span>
+      </div>
+    </div>
+
+    <div class="malla-grid" id="malla-container"></div>
+
+    <div class="summary-footer">
+      <div class="promedio-display">
+        Promedio acumulado: <span class="promedio-val" id="bottom-promedio">-</span>
+      </div>
+      <button class="btn-reset" onclick="resetProgress()">Reiniciar todo el progreso</button>
+    </div>
+  </div>
+
+  <script>
+    const planDeEstudio = [
+      {
+        year: "1.º Año",
+        subjects: [
+          { id: "01", name: "ADMINISTRACIÓN I" },
+          { id: "02", name: "COMERCIALIZACIÓN" },
+          { id: "03", name: "CONTABILIDAD I" },
+          { id: "04", name: "HISTORIA SOCIAL Y ECONÓMICA" },
+          { id: "05", name: "INGLÉS I" },
+          { id: "06", name: "COMERCIO INTERNACIONAL" },
+          { id: "07", name: "PRINCIPIOS DE ECONOMÍA" },
+          { id: "08", name: "MATEMÁTICA I" },
+          { id: "09", name: "ADMINISTRACIÓN II" },
+          { id: "10", name: "INFORMÁTICA" },
+          { id: "11", name: "INGLÉS II" }
+        ]
+      },
+      {
+        year: "2.º Año",
+        subjects: [
+          { id: "12", name: "MATEMÁTICA II" },
+          { id: "13", name: "MICROECONOMÍA" },
+          { id: "14", name: "CONTABILIDAD II" },
+          { id: "15", name: "TEORÍA DE LAS ORGANIZACIONES" },
+          { id: "16", name: "DERECHO CONSTITUCIONAL Y ADMINISTRATIVO" },
+          { id: "17", name: "PSICOLOGÍA APLICADA" },
+          { id: "18", name: "SISTEMAS DE INFORMACIÓN" },
+          { id: "19", name: "MACROECONOMÍA" },
+          { id: "20", name: "INFORMÁTICA APLICADA" },
+          { id: "21", name: "PROBLEMÁTICA DEL MUNDO ACTUAL" }
+        ]
+      },
+      {
+        year: "3.º Año",
+        intermediateDegree: "Título Intermedio: ANALISTA UNIVERSITARIO ADMINISTRATIVO CONTABLE",
+        subjects: [
+          { id: "22", name: "MATEMÁTICA FINANCIERA" },
+          { id: "23", name: "DERECHO CIVIL Y COMERCIAL" },
+          { id: "24", name: "ESTADÍSTICA" },
+          { id: "25", name: "COSTOS I" },
+          { id: "26", name: "ESTRUCTURA Y POLÍTICA ECONÓMICA ARGENTINA" },
+          { id: "27", name: "ADMINISTRACIÓN FINANCIERA" },
+          { id: "28", name: "SOCIEDADES" },
+          { id: "29", name: "ANÁLISIS DE ESTADOS CONTABLES" },
+          { id: "30", name: "SEMINARIO EN ADM. CONTABLE: TALLER DE INTEGRACIÓN" },
+          { id: "31", name: "COSTOS II" }
+        ]
+      },
+      {
+        year: "4.º Año",
+        subjects: [
+          { id: "32", name: "DERECHO LABORAL Y PREVISIONAL" },
+          { id: "33", name: "EVALUACIÓN DE PROYECTOS" },
+          { id: "34", name: "AUDITORÍA" },
+          { id: "35", name: "FINANZAS PÚBLICAS Y DERECHO TRIBUTARIO" },
+          { id: "36", name: "METODOLOGÍA DE LA INVESTIGACIÓN" },
+          { id: "37", name: "CONCURSOS Y QUIEBRAS" },
+          { id: "38", name: "IMPUESTO A LAS RENTAS Y PATRIMONIO" },
+          { id: "39", name: "IMPUESTO SOBRE LOS CONSUMOS Y PROC. TRIBUTARIO" },
+          { id: "40", name: "TÉCNICAS CUANTITATIVAS" },
+          { id: "41", name: "TALLER DE TRABAJO FINAL" }
+        ]
+      },
+      {
+        year: "5.º Año",
+        subjects: [
+          { id: "42", name: "PRÁCTICA PROFESIONAL IMPOSITIVA" },
+          { id: "43", name: "PRÁCTICA PROFESIONAL ADMINISTRATIVO-CONTABLE" },
+          { id: "44", name: "PRÁCTICA PROFESIONAL JURÍDICA-CONTABLE" },
+          { id: "45", name: "PRÁCTICA PROFESIONAL SUPERVISADA" },
+          { id: "46", name: "TRABAJO FINAL" },
+          { id: "47", name: "EXPERIENCIAS FORMATIVAS OBLIGATORIAS ELECTIVAS" }
+        ]
+      }
+    ];
+
+    let userState = JSON.parse(localStorage.getItem('mallaContadorPublicoData')) || {};
+
+    function renderMalla() {
+      const container = document.getElementById('malla-container');
+      container.innerHTML = '';
+
+      let totalSubjects = 0;
+      let approvedCount = 0;
+      let totalGradesSum = 0;
+      let totalGradesCount = 0;
+
+      planDeEstudio.forEach(yearGroup => {
+        const yearCol = document.createElement('div');
+        yearCol.className = 'year-column';
+
+        const title = document.createElement('h2');
+        title.className = 'year-title';
+        title.innerText = yearGroup.year;
+        yearCol.appendChild(title);
+
+        const subjectsList = document.createElement('div');
+        subjectsList.className = 'subjects-list';
+
+        yearGroup.subjects.forEach(subject => {
+          totalSubjects++;
+
+          const subjectData = userState[subject.id] || { approved: false, grade: '' };
+          const isApproved = subjectData.approved;
+
+          if (isApproved) {
+            approvedCount++;
+            if (subjectData.grade && !isNaN(subjectData.grade) && parseFloat(subjectData.grade) > 0) {
+              totalGradesSum += parseFloat(subjectData.grade);
+              totalGradesCount++;
+            }
+          }
+
+          const card = document.createElement('div');
+          card.className = `subject-card ${isApproved ? 'approved' : ''}`;
+
+          card.innerHTML = `
+            <div class="subject-header">
+              <span class="subject-code">Cód. ${subject.id}</span>
+              <input type="checkbox" class="toggle-checkbox" ${isApproved ? 'checked' : ''} onchange="toggleSubject('${subject.id}', this.checked)">
+            </div>
+            <div class="subject-name" onclick="clickSubjectName('${subject.id}')">${subject.name}</div>
+            <div class="subject-footer">
+              ${isApproved ? `
+                <div class="grade-input-container">
+                  <label>Nota:</label>
+                  <input type="number" min="1" max="10" step="0.5" class="grade-input" 
+                    value="${subjectData.grade || ''}" 
+                    placeholder="1-10"
+                    onchange="updateGrade('${subject.id}', this.value)">
+                </div>
+              ` : ''}
+            </div>
+          `;
+
+          subjectsList.appendChild(card);
+        });
+
+        yearCol.appendChild(subjectsList);
+
+        if (yearGroup.intermediateDegree) {
+          const badge = document.createElement('div');
+          badge.className = 'intermediate-title';
+          badge.innerText = yearGroup.intermediateDegree;
+          yearCol.appendChild(badge);
+        }
+
+        container.appendChild(yearCol);
+      });
+
+      updateProgress(totalSubjects, approvedCount, totalGradesSum, totalGradesCount);
+    }
+
+    function clickSubjectName(id) {
+      const isCurrentlyApproved = userState[id]?.approved;
+      toggleSubject(id, !isCurrentlyApproved);
+    }
+
+    function toggleSubject(id, status) {
+      if (!userState[id]) userState[id] = {};
+      userState[id].approved = status;
+      saveAndReload();
+    }
+
+    function updateGrade(id, val) {
+      if (!userState[id]) userState[id] = {};
+      userState[id].grade = val;
+      saveAndReload();
+    }
+
+    function saveAndReload() {
+      localStorage.setItem('mallaContadorPublicoData', JSON.stringify(userState));
+      renderMalla();
+    }
+
+    function updateProgress(totalSub, approvedSub, gradeSum, gradeCount) {
+      const percentage = totalSub > 0 ? Math.round((approvedSub / totalSub) * 100) : 0;
+      const promedio = gradeCount > 0 ? (gradeSum / gradeCount).toFixed(2) : '-';
+
+      document.getElementById('approved-count').innerText = approvedSub;
+      document.getElementById('total-count').innerText = totalSub;
+      document.getElementById('progress-text').innerText = `${percentage}%`;
+      document.getElementById('progress-fill').style.width = `${percentage}%`;
+
+      document.getElementById('top-promedio').innerText = promedio;
+      document.getElementById('bottom-promedio').innerText = promedio !== '-' ? `${promedio} pts` : 'Sin notas cargadas';
+    }
+
+    function resetProgress() {
+      if (confirm('¿Deseas reiniciar todo el progreso y borrar las notas?')) {
+        userState = {};
+        localStorage.removeItem('mallaContadorPublicoData');
+        renderMalla();
+      }
+    }
+
+    renderMalla();
+  </script>
+</body>
+</html>
